@@ -1,6 +1,6 @@
 # Full-Custom 4-Bit Arithmetic Logic Unit (ALU) in 90nm CMOS
 
-A complete transistor-level, full-custom **4-Bit Arithmetic Logic Unit (ALU)** designed, simulated, and physically laid out in **Cadence Virtuoso** using the **90nm Generic PDK (`gpdk090`)**. 
+A complete transistor-level, full-custom **4-Bit Arithmetic Logic Unit (ALU)** designed, simulated, and physically laid out in **Cadence Virtuoso** using the **90nm Generic PDK (`gpdk090`)**.
 
 This project follows an industry-standard **bottom-up hierarchical custom IC design flow**:
 1. **Leaf-Cell Design & Sizing:** Transistor-level schematic capture, testbench creation, and physical layout (with Euler-path diffusion sharing) for all primitive CMOS and Transmission Gate (TG) cells.
@@ -19,7 +19,7 @@ This project follows an industry-standard **bottom-up hierarchical custom IC des
 | **Technology Library** | `gpdk090` (90nm CMOS Process — `nmos1v` & `pmos1v` 1.2V core devices) |
 | **Supply Voltage ($V_{DD}$)** | $1.2\text{ V}$ (`VSS` = $0\text{ V}$) |
 | **Gate Length ($L$)** | $100\text{ nm}$ (uniform across all transistors) |
-| **Baseline Inverter Sizing** | $W_n = 240\text{ nm}$, $W_p = 480\text{ nm}$ ($W_p/W_n = 2:1$ for symmetric switching threshold $V_M = 0.6\text{ V}$) |
+| **Baseline Inverter Sizing** | $W_n = 240\text{ nm}$, $W_p = 480\text{ nm}$ ($W_p / W_n = 2:1$ for symmetric switching threshold $V_M = 0.6\text{ V}$) |
 | **Total Transistor Count** | **84 Transistors** per 1-Bit ALU Slice / **336 Transistors** for Top-Level 4-Bit ALU |
 
 ---
@@ -30,14 +30,14 @@ The ALU executes **8 arithmetic, bitwise logical, and shift operations** selecte
 
 | Opcode (`S2 S1 S0`) | Operation | Mathematical Function | Active Datapath Hardware |
 | :---: | :--- | :--- | :--- |
-| **`000`** | **Addition** | $\text{ALU\_Out} = A + B + C_{in}$ (`Cin = 0`) | 28T Mirror Full Adder (`FA_Mirror_28T`) |
-| **`001`** | **Subtraction (2's Comp.)** | $\text{ALU\_Out} = A + \overline{B} + 1$ (`Cin = S0 = 1`) | 28T Mirror Full Adder + Conditional `XOR2_TG` on $B$ |
-| **`010`** | **Bitwise AND** | $\text{ALU\_Out} = A \cdot B$ | 6T Static CMOS AND Gate (`AND2_CMOS`) |
-| **`011`** | **Bitwise OR** | $\text{ALU\_Out} = A + B$ | 6T Static CMOS OR Gate (`OR2_CMOS`) |
-| **`100`** | **Bitwise XOR** | $\text{ALU\_Out} = A \oplus B$ | 6T Transmission Gate XOR (`XOR2_TG`) |
-| **`101`** | **Bitwise NOT** | $\text{ALU\_Out} = \overline{A}$ | 2T Static CMOS Inverter (`INV_1X`) |
-| **`110`** | **Logical Shift Left** | $\text{ALU\_Out} = A \ll 1$ (`Out[i] = A[i-1]`) | Inter-Slice Shift Routing into MUX Channel `D6` |
-| **`111`** | **Logical Shift Right** | $\text{ALU\_Out} = A \gg 1$ (`Out[i] = A[i+1]`) | Inter-Slice Shift Routing into MUX Channel `D7` |
+| **`000`** | **Addition** | `ALU_Out` $= A + B + C_{in}$ (`Cin = 0`) | 28T Mirror Full Adder (`FA_Mirror_28T`) |
+| **`001`** | **Subtraction (2's Comp.)** | `ALU_Out` $= A + \overline{B} + 1$ (`Cin = S0 = 1`) | 28T Mirror Full Adder + Conditional `XOR2_TG` on $B$ |
+| **`010`** | **Bitwise AND** | `ALU_Out` $= A \cdot B$ | 6T Static CMOS AND Gate (`AND2_CMOS`) |
+| **`011`** | **Bitwise OR** | `ALU_Out` $= A + B$ | 6T Static CMOS OR Gate (`OR2_CMOS`) |
+| **`100`** | **Bitwise XOR** | `ALU_Out` $= A \oplus B$ | 6T Transmission Gate XOR (`XOR2_TG`) |
+| **`101`** | **Bitwise NOT** | `ALU_Out` $= \overline{A}$ | 2T Static CMOS Inverter (`INV_1X`) |
+| **`110`** | **Logical Shift Left** | `ALU_Out` $= A \ll 1$ (`Out[i] = A[i-1]`) | Inter-Slice Shift Routing into MUX Channel `D6` |
+| **`111`** | **Logical Shift Right** | `ALU_Out` $= A \gg 1$ (`Out[i] = A[i+1]`) | Inter-Slice Shift Routing into MUX Channel `D7` |
 
 ---
 
@@ -144,9 +144,9 @@ Phase 4: Hierarchical Macro    -->  ALU_1Bit Macro Floorplanning --> ALU_4Bit To
 
 ### 4.5 1-Bit ALU Slice (`ALU_1Bit` — 84 Transistors)
 * **Bit-Slice Architecture:** Integrates `FA_Mirror_28T`, `AND2_CMOS`, `OR2_CMOS`, `XOR2_TG`, `INV_1X`, `MUX_8x1_TG`, and an input `XOR2_TG` (`B_mux`) for conditional $B$ inversion.
-* **Adder Reuse for 2's Complement Subtraction (`001`):** Operand `B` passes through an XOR gate controlled by `S0` ($B_{\text{mux}} = B \oplus S_0$), and the adder's `Sum` output drives **both `D0` (`000` Add) and `D1` (`001` Sub)** on the 8x1 MUX:
-  * When `S2 S1 S0 = 000` (`S0 = 0`), $B_{\text{mux}} = B$ and $C_{in} = 0 \implies \text{Sum} = A + B$.
-  * When `S2 S1 S0 = 001` (`S0 = 1`), $B_{\text{mux}} = \overline{B}$ and $C_{in} = 1 \implies \text{Sum} = A + \overline{B} + 1 = A - B$.
+* **Adder Reuse for 2's Complement Subtraction (`001`):** Operand `B` passes through an XOR gate controlled by `S0` ($B_{mux} = B \oplus S_0$), and the adder's `Sum` output drives **both `D0` (`000` Add) and `D1` (`001` Sub)** on the 8x1 MUX:
+  * When `S2 S1 S0 = 000` (`S0 = 0`), $B_{mux} = B$ and $C_{in} = 0 \implies \text{Sum} = A + B$.
+  * When `S2 S1 S0 = 001` (`S0 = 1`), $B_{mux} = \overline{B}$ and $C_{in} = 1 \implies \text{Sum} = A + \overline{B} + 1 = A - B$.
 * **80 ns All-Opcode Verification (`ALU_1Bit_TB`):** Swept `S2, S1, S0` from `000` to `111` in `10 ns` windows while cycling `(A, B)` through `00, 01, 10, 11` (in `2.5 ns` steps) inside every window:
   * `0–10 ns` (`000` Add): `ALU_OUT` = `0, 1, 1, 0`, `Cout` = `0, 0, 0, 1`
   * `10–20 ns` (`001` Sub): `ALU_OUT` = `0, 1, 1, 0`, `Cout` = `1, 0, 1, 1` (`Cout = 0` on `0 - 1` borrow)
@@ -171,16 +171,16 @@ Phase 4: Hierarchical Macro    -->  ALU_1Bit Macro Floorplanning --> ALU_4Bit To
 * **4-Slice Cascaded Datapath:** Instantiates four `ALU_1Bit` slices (`Slice 0` LSB to `Slice 3` MSB):
   * **Ripple-Carry Chain:** `Cin` enters Slice 0 (`Cin`), ripples serially through `Cout0 -> Cin1`, `Cout1 -> Cin2`, and `Cout2 -> Cin3`, and exits at Slice 3 (`Cout`).
   * **Zero-Transistor Neighbor Shift Routing:**
-    * **Shift Left (`110`):** `Shift_L_In` receives `VSS` (`0`) on Slice 0, `A0` on Slice 1, `A1` on Slice 2, and `A2` on Slice 3 ($\text{ALU\_Out}[3:0] = A_2 A_1 A_0 0$).
-    * **Shift Right (`111`):** `Shift_R_In` receives `A1` on Slice 0, `A2` on Slice 1, `A3` on Slice 2, and `VSS` (`0`) on Slice 3 ($\text{ALU\_Out}[3:0] = 0 A_3 A_2 A_1$).
+    * **Shift Left (`110`):** `Shift_L_In` receives `VSS` (`0`) on Slice 0, `A0` on Slice 1, `A1` on Slice 2, and `A2` on Slice 3 (`ALU_Out[3:0]` $= A_2 A_1 A_0 0$).
+    * **Shift Right (`111`):** `Shift_R_In` receives `A1` on Slice 0, `A2` on Slice 1, `A3` on Slice 2, and `VSS` (`0`) on Slice 3 (`ALU_Out[3:0]` $= 0 A_3 A_2 A_1$).
 * **4-Bit Simulation Verification (`ALU_4Bit_TB`):** Verified across all 8 opcodes (`0–80 ns`) using fixed 4-bit operands **$A[3:0] = 1010_2$ (Decimal 10)** and **$B[3:0] = 0011_2$ (Decimal 3)** with `Cin` tied to `S0`:
 
-| Time Window | Opcode (`S2 S1 S0`) | Operation on $A = 1010_2 (10), B = 0011_2 (3)$ | Simulated `ALU_OUT[3:0]` | Simulated `Cout` | Status |
+| Time Window | Opcode (`S2 S1 S0`) | Operation on $A = 1010_2\ (10),\ B = 0011_2\ (3)$ | Simulated `ALU_OUT[3:0]` | Simulated `Cout` | Status |
 | :---: | :---: | :--- | :---: | :---: | :---: |
 | **`0 – 10 ns`** | `000` (`Cin = 0`) | **Addition:** $10 + 3 = 13$ | **`1101`** ($13_{10}$) | `0` | **PASS** |
 | **`10 – 20 ns`** | `001` (`Cin = 1`) | **Subtraction:** $10 - 3 = 7$ | **`0111`** ($7_{10}$) | `1` (No borrow) | **PASS** |
-| **`20 – 30 ns`** | `010` | **Bitwise AND:** $1010_2 \ \& \ 0011_2$ | **`0010`** ($2_{10}$) | — | **PASS** |
-| **`30 – 40 ns`** | `011` | **Bitwise OR:** $1010_2 \ \Vert{} \ 0011_2$ | **`1011`** ($11_{10}$) | — | **PASS** |
+| **`20 – 30 ns`** | `010` | **Bitwise AND:** $1010_2 \land 0011_2$ | **`0010`** ($2_{10}$) | — | **PASS** |
+| **`30 – 40 ns`** | `011` | **Bitwise OR:** $1010_2 \lor 0011_2$ | **`1011`** ($11_{10}$) | — | **PASS** |
 | **`40 – 50 ns`** | `100` | **Bitwise XOR:** $1010_2 \oplus 0011_2$ | **`1001`** ($9_{10}$) | — | **PASS** |
 | **`50 – 60 ns`** | `101` | **Bitwise NOT ($\overline{A}$):** $\overline{1010_2}$ | **`0101`** ($5_{10}$) | — | **PASS** |
 | **`60 – 70 ns`** | `110` | **Logical Shift Left ($A \ll 1$):** $1010_2 \ll 1$ | **`0100`** ($4_{10}$) | — | **PASS** |
@@ -231,3 +231,17 @@ Phase 4: Hierarchical Macro    -->  ALU_1Bit Macro Floorplanning --> ALU_4Bit To
     ├── ALU_4_BIT_RESULT.png
     └── ALU_4_BIT_LAYOUT.png
 ```
+
+---
+
+## 6. Author
+
+**Indra**  
+* **Program:** M.Tech in VLSI  
+* **Institution:** Indian Institute of Information Technology, Design and Manufacturing (IIITDM), Kurnool  
+* **Roll Number:** 226EC1001  
+* **Email:** [goliindra2536@gmail.com](mailto:goliindra2536@gmail.com)  
+* **GitHub:** [@Indra9097](https://github.com/Indra9097)
+
+[![GitHub](https://img.shields.io/badge/GitHub-Indra9097-181717?style=flat-square&logo=github)](https://github.com/Indra9097)
+[![Email](https://img.shields.io/badge/Email-goliindra2536%40gmail.com-D14836?style=flat-square&logo=gmail&logoColor=white)](mailto:goliindra2536@gmail.com)
